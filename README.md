@@ -137,9 +137,8 @@ g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表
 
 * 贝尔曼方程<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/belman.png)
-<br>
-其中，π代表上述提到的策略，Q π (s, a)相比于V π (s)，引入了动作，被称作动作值函数。对贝尔曼方程求最优解，就得到了贝尔曼最优性方程。<br>
-![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm1.png)<br>
+<br>其中，π代表上述提到的策略，Q π (s, a)相比于V π (s)，引入了动作，被称作动作值函数。对贝尔曼方程求最优解，就得到了贝尔曼最优性方程。<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm1.png)
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm2.png)
 <br>求解该方程有两种方法：策略迭代和值迭代。
 
@@ -166,22 +165,15 @@ s4	Q(4, 1)	Q(4, 2)	Q(4, 3)	Q(4, 4) <br>
 Q-Learning算法的过程就是存储Q值的过程。上表中，横列为状态s，纵列为Action a，s和a决定了表中的Q值。
 
 第一步：初始化，将表中的Q值全部置0；
-第二步：根据策略及状态s，选择a执行。假定当前状态为s1，由于初始值都为0，所以任意选取a执行，假定这里选取了a2执行，得到了reward为1，并且进入了状态s3。根据Q值更新公式：
-
-
-来更新Q值，这里我们假设α是1，λ也等于1，也就是每一次都把目标Q值赋给Q。那么这里公式变成：
-
-
-
-所以在这里，就是
-
-
-
-那么对应的s3状态，最大值是0，所以
-
-
-Q表格就变成：
-
+第二步：根据策略及状态s，选择a执行。假定当前状态为s1，由于初始值都为0，所以任意选取a执行，假定这里选取了a2执行，得到了reward为1，并且进入了状态s3。根据Q值更新公式：<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st1.png)
+<br>来更新Q值，这里我们假设α是1，λ也等于1，也就是每一次都把目标Q值赋给Q。那么这里公式变成：<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st2.png)
+<br>所以在这里，就是<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st3.png)
+<br>那么对应的s3状态，最大值是0，所以
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st4.png)
+<br>Q表格就变成：
 状态	a1	a2	a3	a4 <br>
 s1	0	1	0	0 <br>
 s2	0	0	0	0 <br>
@@ -189,24 +181,20 @@ s3	0	0	0	0 <br>
 s4	0	0	0	0 <br>
 然后置位当前状态s为s3。
 
-第三步：继续循环操作，进入下一次动作，当前状态是s3，假设选择动作a3，然后得到reward为2，状态变成s1，那么我们同样进行更新：
-
-
-所以Q的表格就变成：
-
+第三步：继续循环操作，进入下一次动作，当前状态是s3，假设选择动作a3，然后得到reward为2，状态变成s1，那么我们同样进行更新：<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st5.png)
+<br>所以Q的表格就变成：
 状态	a1	a2	a3	a4 <br>
 s1	0	1	0	0 <br>
 s2	0	0	0	0 <br>
 s3	0	0	3	0 <br>
 s4	0	0	0	0 <br>
 第四步： 继续循环，Q值在试验的同时反复更新，直到收敛。
-上述表格演示了具有4种状态/4种行为的系统，然而在实际应用中，以本文讲到的Flappy Bird游戏为例，界面为80*80个像素点，每个像素点的色值有256种可能。那么实际的状态总数为256的80*80次方，这是一个很大的数字，直接导致无法通过表格的思路进行计算。
-
-因此，为了实现降维，这里引入了一个价值函数近似的方法，通过一个函数表近似表达价值函数：
-
-
-
-其中，ω 与 b 分别为参数。看到这里，终于可以联系到前面提到的神经网络了，上面的表达式不就是神经元的函数吗？
+上述表格演示了具有4种状态/4种行为的系统，然而在实际应用中，以本文讲到的Flappy Bird游戏为例，界面为80*80个像素点，每个像素点的色值有256种可能。那么实际的状态总数为256的80*80次方，这是一个很大的数字，直接导致无法通过表格的思路进行计算。<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st6.png)
+<br>因此，为了实现降维，这里引入了一个价值函数近似的方法，通过一个函数表近似表达价值函数：<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/st7.png)
+<br>其中，ω 与 b 分别为参数。看到这里，终于可以联系到前面提到的神经网络了，上面的表达式不就是神经元的函数吗？
 
 * Q-network
 下面这张图来自论文《Human-level Control through Deep Reinforcement Learning》，其中详细介绍了上述将Q值神经网络化的过程。（感兴趣的可以点之前的链接了解原文～）<br>
