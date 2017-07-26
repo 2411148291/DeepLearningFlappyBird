@@ -373,3 +373,6 @@ if t > OBSERVE:
 ```
 `s_j_batch`、`a_batch`、`r_batch`、`s_j1_batch`是从经验池`D`中提取到的马尔科夫序列（Java童鞋羡慕Python的列表推导式啊），`y_batch`为标签值，若游戏结束，则不存在下一步中状态对应的`Q`值（回忆Q值更新过程），直接添加`r_batch`，若未结束，则用折合因子（0.99）和下一步中状态的最大Q值的乘积，添加至`y_batch`。
 最后，执行梯度下降训练，`train_step`的入参是`s_j_batch`、`a_batch`和`y_batch`。差不多经过2000000步（在本机上大概10个小时）训练之后，就能达到本文开头动图中的效果啦。
+
+## 声明
+本篇内容主要记录学习的过程，大多内容来自 Young的 http://www.cnblogs.com/younghao/p/6696739.html 的分析。
