@@ -179,4 +179,195 @@ def createNetwork():
 
     return s, readout, h_fc1
 ```
+## 3. OpenCV-Python图像预处理方法
 
+在Ubuntu中安装opencv的步骤比较麻烦，当时也踩了不少坑，各种Google解决。建议安装opencv3。
+这部分主要对frame_step方法返回的数据进行了灰度化和二值化，也就是最基本的图像预处理方法。
+```python
+x_t, r_0, terminal = game_state.frame_step(do_nothing)
+# 首先将图像转换为80*80，然后进行灰度化
+x_t = cv2.cvtColor(cv2.resize(x_t, (80, 80)), cv2.COLOR_BGR2GRAY)
+# 对灰度图像二值化
+ret, x_t = cv2.threshold(x_t, 1, 255, cv2.THRESH_BINARY)
+# 四通道输入图像
+s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
+```
+## 4. DQN训练过程
+
+这是代码部分要讲的重点，也是上述Q-learning算法的代码化。
+
+i. 在进入训练之前，首先创建一些变量：
+```python
+# define the cost function
+a = tf.placeholder("float", [None, ACTIONS])
+y = tf.placeholder("float", [None])
+readout_action = tf.reduce_sum(tf.multiply(readout, a), axis=1)
+cost = tf.reduce_mean(tf.square(y - readout_action))
+train_step = tf.train.AdamOptimizer(1e-6).minimize(cost)
+
+# open up a game state to communicate with emulator
+game_state = game.GameState()
+
+# store the previous observations in replay memory
+D = deque()
+```
+在TensorFlow中，通常有三种读取数据的方式：Feeding、Reading from files和Preloaded data。Feeding是最常用也最有效的方法。即在模型（Graph）构建之前，先使用placeholder进行占位，但此时并没有训练数据，训练是通过feed_dict传入数据。
+
+这里的a表示输出的动作，即强化学习模型中的Action，y表示标签值，readout_action表示模型输出与a相乘后，在一维求和，损失函数对标签值与输出值的差进行平方，train_step表示对损失函数进行Adam优化。
+
+赋值的过程为：
+```python
+# perform gradient step
+train_step.run(feed_dict={
+    y: y_batch,
+    a: a_batch,
+    s: s_j_batch}
+)
+```
+ii. 创建游戏及经验池 D
+```python
+# open up a game state to communicate with emulator
+game_state = game.GameState()
+
+# store the previous observations in replay memory
+D = deque()
+```
+经验池 D采用了队列的数据结构，是TensorFlow中最基础的数据结构，可以通过dequeue()和enqueue([y])方法进行取出和压入数据。经验池 D用来存储实验过程中的数据，后面的训练过程会从中随机取出一定量的batch进行训练。
+
+变量创建完成之后，需要调用TensorFlow系统方法tf.global_variables_initializer()添加一个操作实现变量初始化。运行时机是在模型构建完成，Session建立之初。比如：
+```python
+# Create two variables.
+weights = tf.Variable(tf.random_normal([784, 200], stddev=0.35),
+                      name="weights")
+biases = tf.Variable(tf.zeros([200]), name="biases")
+...
+# Add an op to initialize the variables.
+init_op = tf.global_variables_initializer()
+
+# Later, when launching the model
+with tf.Session() as sess:
+  # Run the init operation.
+  sess.run(init_op)
+  ...
+  # Use the model
+  ...
+ ```
+iii. 参数保存及加载
+
+采用TensorFlow训练模型，需要将训练得到的参数进行保存，不然一关机，就一夜回到解放前了。TensorFlow采用Saver来保存。一般在Session()建立之前，通过tf.train.Saver()获取Saver实例。
+```python
+saver = tf.train.Saver()
+```
+变量的恢复使用saver的restore方法：
+```python
+# Create some variables.
+v1 = tf.Variable(..., name="v1")
+v2 = tf.Variable(..., name="v2")
+...
+# Add ops to save and restore all the variables.
+saver = tf.train.Saver()
+
+# Later, launch the model, use the saver to restore variables from disk, and
+# do some work with the model.
+with tf.Session() as sess:
+  # Restore variables from disk.
+  saver.restore(sess, "/tmp/model.ckpt")
+  print("Model restored.")
+  # Do some work with the model
+  ...
+ ```
+在该Demo训练时，也采用了Saver进行参数保存。
+```python
+# saving and loading networks
+saver = tf.train.Saver()
+checkpoint = tf.train.get_checkpoint_state("saved_networks")
+if checkpoint and checkpoint.model_checkpoint_path:
+    saver.restore(sess, checkpoint.model_checkpoint_path)
+    print("Successfully loaded:", checkpoint.model_checkpoint_path)
+else:
+    print("Could not find old network weights")
+ ```
+首先加载CheckPointState文件，然后采用saver.restore对已存在参数进行恢复。
+在该Demo中，每隔10000步，就对参数进行保存：
+```python
+# save progress every 10000 iterations
+if t % 10000 == 0:
+    saver.save(sess, 'saved_networks/' + GAME + '-dqn', global_step=t)
+```
+iv. 实验及样本存储
+
+首先，根据ε 概率选择一个Action。
+```python
+# choose an action epsilon greedily
+readout_t = readout.eval(feed_dict={s: [s_t]})[0]
+a_t = np.zeros([ACTIONS])
+action_index = 0
+if t % FRAME_PER_ACTION == 0:
+    if random.random() <= epsilon:
+        print("----------Random Action----------")
+        action_index = random.randrange(ACTIONS)
+        a_t[random.randrange(ACTIONS)] = 1
+    else:
+        action_index = np.argmax(readout_t)
+        a_t[action_index] = 1
+else:
+    a_t[0] = 1  # do nothing
+```
+这里，readout_t是训练数据为之前提到的四通道图像的模型输出。a_t是根据ε 概率选择的Action。
+
+其次，执行选择的动作，并保存返回的状态、得分。
+```python
+# run the selected action and observe next state and reward
+x_t1_colored, r_t, terminal = game_state.frame_step(a_t)
+x_t1 = cv2.cvtColor(cv2.resize(x_t1_colored, (80, 80)), cv2.COLOR_BGR2GRAY)
+ret, x_t1 = cv2.threshold(x_t1, 1, 255, cv2.THRESH_BINARY)
+x_t1 = np.reshape(x_t1, (80, 80, 1))
+# s_t1 = np.append(x_t1, s_t[:,:,1:], axis = 2)
+s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
+
+# store the transition in D
+D.append((s_t, a_t, r_t, s_t1, terminal))
+```
+经验池D保存的是一个马尔科夫序列。(s_t, a_t, r_t, s_t1, terminal)分别表示t时的状态s_t，执行的动作a_t，得到的反馈r_t，以及得到的下一步的状态s_t1和游戏是否结束的标志terminal。
+
+在下一训练过程中，更新当前状态及步数：
+```python
+# update the old values
+s_t = s_t1
+t += 1
+```
+重复上述过程，实现反复实验及样本存储。
+
+v. 通过梯度下降进行模型训练
+
+在实验一段时间后，经验池D中已经保存了一些样本数据后，就可以从这些样本数据中随机抽样，进行模型训练了。这里设置样本数为OBSERVE = 100000.。随机抽样的样本数为BATCH = 32。
+```python
+if t > OBSERVE:
+    # sample a minibatch to train on
+    minibatch = random.sample(D, BATCH)
+
+    # get the batch variables
+    s_j_batch = [d[0] for d in minibatch]
+    a_batch = [d[1] for d in minibatch]
+    r_batch = [d[2] for d in minibatch]
+    s_j1_batch = [d[3] for d in minibatch]
+
+    y_batch = []
+    readout_j1_batch = readout.eval(feed_dict={s: s_j1_batch})
+    for i in range(0, len(minibatch)):
+        terminal = minibatch[i][4]
+        # if terminal, only equals reward
+        if terminal:
+            y_batch.append(r_batch[i])
+        else:
+            y_batch.append(r_batch[i] + GAMMA * np.max(readout_j1_batch[i]))
+
+    # perform gradient step
+    train_step.run(feed_dict={
+        y: y_batch,
+        a: a_batch,
+        s: s_j_batch}
+    )
+```
+s_j_batch、a_batch、r_batch、s_j1_batch是从经验池D中提取到的马尔科夫序列（Java童鞋羡慕Python的列表推导式啊），y_batch为标签值，若游戏结束，则不存在下一步中状态对应的Q值（回忆Q值更新过程），直接添加r_batch，若未结束，则用折合因子（0.99）和下一步中状态的最大Q值的乘积，添加至y_batch。
+最后，执行梯度下降训练，train_step的入参是s_j_batch、a_batch和y_batch。差不多经过2000000步（在本机上大概10个小时）训练之后，就能达到本文开头动图中的效果啦。
