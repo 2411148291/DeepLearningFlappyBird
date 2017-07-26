@@ -43,9 +43,9 @@
 >比如，我们看到一个美女，可能最先观察到的是美女身上的某些部位（自己体会）。<br>
 
 因此，卷积神经网络与人类的视觉类似，采用局部感知，低层的神经元只负责感知局部的信息，在向后传输的过程中，高层的神经元将局部信息综合起来得到全局信息。
-<br>
+<br><br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/fc1.png)
-<br>
+<br><br>
 从上图中可以看出，采用局部连接之后，可以大大的降低训练参数的量级。
 
 ### 2. 参数共享
@@ -61,11 +61,9 @@
 
 ### 3. 多卷积核
 如上，每个卷积都是一种特征提取方式，那么对于整幅图像来讲，单个卷积核提取的特征肯定是不够的，那么对同一幅图像使用多种卷积核进行特征提取，就能得到多幅特征图（feature map）。
-
 <br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/fc2.png)
 <br>
-
 多幅特征图可以看成是同一张图像的不同通道，这个概念在后面代码实现的时候用得上。
 
 ### 4. 池化
@@ -73,15 +71,12 @@
 <br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/pool.gif)
 <br>
-池化就是将池化核范围内（比如2*2范围）的训练参数采用平均值（平均值池化）或最大值（最大值池化）来进行替代。
-
+池化就是将池化核范围内（比如2×2范围）的训练参数采用平均值（平均值池化）或最大值（最大值池化）来进行替代。
 终于到了展示模型的时候，下面这幅图是笔者手画的（用电脑画太费时，将就看吧），这幅图展示了本文中用于训练游戏所用的卷积神经网络模型。
-
-<br>
+<br><br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/blackboard.png)<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/illus.png)
-<br>
-
+<br><br>
 a. 初始输入四幅图像80×80×4（4代表输入通道，初始时四幅图像是完全一致的），经过卷积核8×8×4×32（输入通道4，输出通道32），步距为4（每步卷积走4个像素点），得到32幅特征图（feature map），大小为20×20；隐藏神经元个数是20×20×32 = 12800个
 
 有必要把tensoflow的卷积公式拿出来说明一下： tf.nn.conv2d(x,W,strides=[1,1,1,1], padding='SAME')
