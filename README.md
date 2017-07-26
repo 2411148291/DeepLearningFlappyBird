@@ -138,18 +138,14 @@ g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表
 * 贝尔曼方程<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/belman.png)
 <br>
-其中，π代表上述提到的策略，Q π (s, a)相比于V π (s)，引入了动作，被称作动作值函数。对贝尔曼方程求最优解，就得到了贝尔曼最优性方程。
-<br>
-![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm1.png)
-<br>
+其中，π代表上述提到的策略，Q π (s, a)相比于V π (s)，引入了动作，被称作动作值函数。对贝尔曼方程求最优解，就得到了贝尔曼最优性方程。<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm1.png)<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/beerm2.png)
-<br>
-求解该方程有两种方法：策略迭代和值迭代。
+<br>求解该方程有两种方法：策略迭代和值迭代。
 
 * 策略迭代
 策略迭代分为两个步骤：策略评估和策略改进，即首先评估策略，得到状态值函数，其次，改进策略，如果新的策略比之前好，就替代老的策略。<br>
-![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/policy1.png)
-<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/policy1.png)<br>
 * 值迭代
 从上面我们可以看到，策略迭代算法包含了一个策略估计的过程，而策略估计则需要扫描(sweep)所有的状态若干次，其中巨大的计算量直接影响了策略迭代算法的效率。而值迭代每次只扫描一次，更新过程如下：<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/policy2.png)
