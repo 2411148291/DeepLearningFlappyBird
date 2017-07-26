@@ -93,3 +93,27 @@ f. 经过全连接1600×512，得到512维特征向量；
 g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表游戏屏幕上的是否点击事件。
 
 可以看出，该模型实现了端到端的学习，输入的是游戏屏幕的截图信息（代码中经过opencv处理），输出的是游戏的动作，即是否点击屏幕。深度学习的强大在于其数据拟合能力，不需要传统机器学习中复杂的特征提取过程，而是依靠模型发现数据内部的关系。
+
+# 四、代码：TensorFlow实现
+代码从结构上来讲，主要分为以下几部分：
+GameState游戏类，frame_step方法控制移动
+CNN模型构建
+OpenCV-Python图像预处理方法
+模型训练过程
+
+1. GameState游戏类及frame_step方法
+通过Python实现游戏必然要用pygame库，其包含时钟、基本的显示控制、各种游戏控件、触发事件等，对此有兴趣的，可以详细了解pygame。frame_step方法的入参为shape为 (2,) 的ndarray，值域： [1,0]：什么都不做； [0,1]：提升Bird。来看下代码实现：
+
+if input_actions[1] == 1:
+    if self.playery > -2 * PLAYER_HEIGHT:
+        self.playerVelY = self.playerFlapAcc
+        self.playerFlapped = True
+        # SOUNDS['wing'].play()
+
+后续操作包括检查得分、设置界面、检查是否碰撞等，这里不再详细展开。
+frame_step方法的返回值是：
+
+return image_data, reward, terminal
+
+分别表示界面图像数据，得分以及是否结束游戏。对应前面强化学习模型，界面图像数据表示环境状态 s，得分表示环境给予学习系统的反馈 r。
+
