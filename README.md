@@ -94,14 +94,14 @@ g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表
 
 可以看出，该模型实现了端到端的学习，输入的是游戏屏幕的截图信息（代码中经过opencv处理），输出的是游戏的动作，即是否点击屏幕。深度学习的强大在于其数据拟合能力，不需要传统机器学习中复杂的特征提取过程，而是依靠模型发现数据内部的关系。
 
-# 四、代码：TensorFlow实现
+## 四、代码：TensorFlow实现
 代码从结构上来讲，主要分为以下几部分：
 GameState游戏类，frame_step方法控制移动
 CNN模型构建
 OpenCV-Python图像预处理方法
 模型训练过程
 
-1. GameState游戏类及frame_step方法
+### 1. GameState游戏类及frame_step方法
 通过Python实现游戏必然要用pygame库，其包含时钟、基本的显示控制、各种游戏控件、触发事件等，对此有兴趣的，可以详细了解pygame。frame_step方法的入参为shape为 (2,) 的ndarray，值域： [1,0]：什么都不做； [0,1]：提升Bird。来看下代码实现：
 ```Python
 if input_actions[1] == 1:
@@ -117,7 +117,7 @@ return image_data, reward, terminal
 ```
 分别表示界面图像数据，得分以及是否结束游戏。对应前面强化学习模型，界面图像数据表示环境状态 s，得分表示环境给予学习系统的反馈 r。
 
-2. CNN模型构建
+### 2. CNN模型构建
 
 该Demo中包含三个卷积层，一个池化层，两个全连接层，最后输出包含每一个动作Q值的向量。因此，首先定义权重、偏置、卷积和池化函数：
 ``` Python
@@ -179,7 +179,7 @@ def createNetwork():
 
     return s, readout, h_fc1
 ```
-## 3. OpenCV-Python图像预处理方法
+### 3. OpenCV-Python图像预处理方法
 
 在Ubuntu中安装opencv的步骤比较麻烦，当时也踩了不少坑，各种Google解决。建议安装opencv3。
 这部分主要对frame_step方法返回的数据进行了灰度化和二值化，也就是最基本的图像预处理方法。
@@ -192,7 +192,7 @@ ret, x_t = cv2.threshold(x_t, 1, 255, cv2.THRESH_BINARY)
 # 四通道输入图像
 s_t = np.stack((x_t, x_t, x_t, x_t), axis=2)
 ```
-## 4. DQN训练过程
+### 4. DQN训练过程
 
 这是代码部分要讲的重点，也是上述Q-learning算法的代码化。
 
