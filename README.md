@@ -1,9 +1,9 @@
 本文主要介绍如何通过AI（人工智能）的方式玩Flappy Bird游戏，分为以下四个部分内容：
 
-1、Flappy Bird 游戏展示
-2、模型：卷积神经网络
-3、算法：Deep Q Network
-4、代码：TensorFlow实现
+1、Flappy Bird 游戏展示<br>
+2、模型：卷积神经网络<br>
+3、算法：Deep Q Network<br>
+4、代码：TensorFlow实现<br>
 
 # 一、Flappy Bird 游戏展示
 <img src="./images/flappy_bird_demp.gif" width="250">
@@ -68,9 +68,9 @@
 
 ### 4. 池化
 得到特征图之后，可以使用提取到的特征去训练分类器，但依然会面临特征维度过多，难以计算，并且可能过拟合的问题。从图像识别的角度来讲，图像可能存在偏移、旋转等，但图像的主体却相同的情况。也就是不同的特征向量可能对应着相同的结果，那么池化就是解决这个问题的。
-<br>
+<br><br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/pool.gif)
-<br>
+<br><br>
 池化就是将池化核范围内（比如2×2范围）的训练参数采用平均值（平均值池化）或最大值（最大值池化）来进行替代。
 终于到了展示模型的时候，下面这幅图是笔者手画的（用电脑画太费时，将就看吧），这幅图展示了本文中用于训练游戏所用的卷积神经网络模型。
 <br><br>
