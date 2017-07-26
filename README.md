@@ -181,7 +181,7 @@ def createNetwork():
 ```
 ### 3. OpenCV-Python图像预处理方法
 
-在Ubuntu中安装opencv的步骤比较麻烦，当时也踩了不少坑，各种Google解决。建议安装opencv3。
+本人在win10的Anaconda中安装的opencv3，命令 conda install -c https://conda.anaconda.org/menpo opencv3 过程中遇到http和URL错误，保证你的机器能访问到上述https网址，最终安装成功。建议安装opencv3。
 这部分主要对frame_step方法返回的数据进行了灰度化和二值化，也就是最基本的图像预处理方法。
 ```python
 x_t, r_0, terminal = game_state.frame_step(do_nothing)
