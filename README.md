@@ -120,7 +120,7 @@ return image_data, reward, terminal
 2. CNN模型构建
 
 该Demo中包含三个卷积层，一个池化层，两个全连接层，最后输出包含每一个动作Q值的向量。因此，首先定义权重、偏置、卷积和池化函数：
-
+<div>
 # 权重
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.01)
@@ -156,10 +156,8 @@ def createNetwork():
     # 第二层全连接
     W_fc2 = weight_variable([512, ACTIONS])
     b_fc2 = bias_variable([ACTIONS])
-
     # 输入层
     s = tf.placeholder("float", [None, 80, 80, 4])
-
     # 第一层隐藏层+池化层
     h_conv1 = tf.nn.relu(conv2d(s, W_conv1, 4) + b_conv1)
     h_pool1 = max_pool_2x2(h_conv1)
@@ -179,3 +177,4 @@ def createNetwork():
     readout = tf.matmul(h_fc1, W_fc2) + b_fc2
 
     return s, readout, h_fc1
+</div>
