@@ -103,18 +103,18 @@ OpenCV-Python图像预处理方法
 
 1. GameState游戏类及frame_step方法
 通过Python实现游戏必然要用pygame库，其包含时钟、基本的显示控制、各种游戏控件、触发事件等，对此有兴趣的，可以详细了解pygame。frame_step方法的入参为shape为 (2,) 的ndarray，值域： [1,0]：什么都不做； [0,1]：提升Bird。来看下代码实现：
-
+```Python
 if input_actions[1] == 1:
     if self.playery > -2 * PLAYER_HEIGHT:
         self.playerVelY = self.playerFlapAcc
         self.playerFlapped = True
         # SOUNDS['wing'].play()
-
+```
 后续操作包括检查得分、设置界面、检查是否碰撞等，这里不再详细展开。
 frame_step方法的返回值是：
-
+```Python
 return image_data, reward, terminal
-
+```
 分别表示界面图像数据，得分以及是否结束游戏。对应前面强化学习模型，界面图像数据表示环境状态 s，得分表示环境给予学习系统的反馈 r。
 
 2. CNN模型构建
@@ -138,7 +138,7 @@ def conv2d(x, W, stride):
 # 池化
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
-// Python
+```
 然后，通过上述函数构建卷积神经网络模型（对代码中参数不解的，可直接往前翻，看上面那张手画的图）。
 ```Python
 def createNetwork():
@@ -178,4 +178,5 @@ def createNetwork():
     readout = tf.matmul(h_fc1, W_fc2) + b_fc2
 
     return s, readout, h_fc1
-//Python
+```
+
