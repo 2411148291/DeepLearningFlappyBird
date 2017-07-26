@@ -120,7 +120,7 @@ return image_data, reward, terminal
 2. CNN模型构建
 
 该Demo中包含三个卷积层，一个池化层，两个全连接层，最后输出包含每一个动作Q值的向量。因此，首先定义权重、偏置、卷积和池化函数：
-<div>
+``` Python
 # 权重
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.01)
@@ -138,8 +138,9 @@ def conv2d(x, W, stride):
 # 池化
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
+// Python
 然后，通过上述函数构建卷积神经网络模型（对代码中参数不解的，可直接往前翻，看上面那张手画的图）。
-` ``Python
+```Python
 def createNetwork():
     # 第一层卷积
     W_conv1 = weight_variable([8, 8, 4, 32])
