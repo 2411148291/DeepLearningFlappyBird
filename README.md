@@ -13,8 +13,8 @@
 
 # 二、模型：卷积神经网络
 
-神经网络算法是由众多的神经元可调的连接权值连接而成，具有大规模并行处理、分布式信息存储、良好的自组织自学习能力等特点。人工神经元与生物神经元结构类似，其结构对比如下图所示。
-![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/bi-neuron.jpg)
+神经网络算法是由众多的神经元可调的连接权值连接而成，具有大规模并行处理、分布式信息存储、良好的自组织自学习能力等特点。人工神经元与生物神经元结构类似，其结构对比如下图所示。<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/bi-neuron.png)
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/neurons.jpg)<br>
 人工神经元的输入（x1,x2...xm）类似于生物神经元的树突，输入经过不同的权值（wk1, wk2, ....wkn），加上偏置，经过激活函数得到输出，最后将输出传输到下一层神经元进行处理。
 
