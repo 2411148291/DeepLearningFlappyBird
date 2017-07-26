@@ -99,14 +99,13 @@ g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表
 ## 三、算法：Deep Q Network
 
 有了卷积神经网络模型，那么怎样训练模型？使得模型收敛，从而能够指导游戏动作呢？机器学习分为监督学习、非监督学习和强化学习，这里要介绍的Q Network属于强化学习（Reinforcement Learning）的范畴。在正式介绍Q Network之前，先简单说下它的光荣历史。
-
 2014年Google 4亿美金收购DeepMind的桥段，大家可能听说过。那么，DeepMind是如何被Google给盯上的呢？最终原因可以归咎为这篇论文：
-
-Playing Atari with Deep Reinforcement Learning
-DeepMind团队通过强化学习，完成了20多种游戏，实现了端到端的学习。其用到的算法就是Q Network。2015年，DeepMind团队在《Nature》上发表了一篇升级版：
-
-Human-level control through deep reinforcement learning
-自此，在这类游戏领域，人已经无法超过机器了。后来又有了AlphaGo，以及Master，当然，这都是后话了。其实本文也属于上述论文的范畴，只不过基于TensorFlow平台进行了实现，加入了一些笔者自己的理解而已。
+<br>
+>Playing Atari with Deep Reinforcement Learning
+<br>DeepMind团队通过强化学习，完成了20多种游戏，实现了端到端的学习。其用到的算法就是Q Network。2015年，DeepMind团队在《Nature》上发表了一篇升级版：
+<br>
+>Human-level control through deep reinforcement learning
+<br>自此，在这类游戏领域，人已经无法超过机器了。后来又有了AlphaGo，以及Master，当然，这都是后话了。其实本文也属于上述论文的范畴，只不过基于TensorFlow平台进行了实现，加入了一些笔者自己的理解而已。
 
 回到正题，Q Network属于强化学习，那么先介绍下强化学习。
 
