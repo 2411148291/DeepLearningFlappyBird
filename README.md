@@ -213,7 +213,7 @@ D = deque()
 ```
 在TensorFlow中，通常有三种读取数据的方式：Feeding、Reading from files和Preloaded data。Feeding是最常用也最有效的方法。即在模型（Graph）构建之前，先使用placeholder进行占位，但此时并没有训练数据，训练是通过feed_dict传入数据。
 
-这里的a表示输出的动作，即强化学习模型中的Action，y表示标签值，readout_action表示模型输出与a相乘后，在一维求和，损失函数对标签值与输出值的差进行平方，train_step表示对损失函数进行Adam优化。
+这里的`a`表示输出的动作，即强化学习模型中的Action，`y`表示标签值，`readout_action`表示模型输出与`a`相乘后，在一维求和，损失函数对标签值与输出值的差进行平方，`train_step`表示对损失函数进行`Adam`优化。
 
 赋值的过程为：
 ```python
@@ -232,7 +232,7 @@ game_state = game.GameState()
 # store the previous observations in replay memory
 D = deque()
 ```
-经验池 D采用了队列的数据结构，是TensorFlow中最基础的数据结构，可以通过dequeue()和enqueue([y])方法进行取出和压入数据。经验池 D用来存储实验过程中的数据，后面的训练过程会从中随机取出一定量的batch进行训练。
+经验池 D采用了队列的数据结构，是TensorFlow中最基础的数据结构，可以通过`dequeue()`和`enqueue([y])`方法进行取出和压入数据。经验池 D用来存储实验过程中的数据，后面的训练过程会从中随机取出一定量的batch进行训练。
 
 变量创建完成之后，需要调用TensorFlow系统方法tf.global_variables_initializer()添加一个操作实现变量初始化。运行时机是在模型构建完成，Session建立之初。比如：
 ```python
@@ -254,11 +254,11 @@ with tf.Session() as sess:
  ```
 iii. 参数保存及加载
 
-采用TensorFlow训练模型，需要将训练得到的参数进行保存，不然一关机，就一夜回到解放前了。TensorFlow采用Saver来保存。一般在Session()建立之前，通过tf.train.Saver()获取Saver实例。
+采用TensorFlow训练模型，需要将训练得到的参数进行保存，不然一关机，就一夜回到解放前了。TensorFlow采用Saver来保存。一般在Session()建立之前，通过`tf.train.Saver()`获取Saver实例。
 ```python
 saver = tf.train.Saver()
 ```
-变量的恢复使用saver的restore方法：
+变量的恢复使用`saver`的`restore`方法：
 ```python
 # Create some variables.
 v1 = tf.Variable(..., name="v1")
@@ -287,7 +287,7 @@ if checkpoint and checkpoint.model_checkpoint_path:
 else:
     print("Could not find old network weights")
  ```
-首先加载CheckPointState文件，然后采用saver.restore对已存在参数进行恢复。
+首先加载CheckPointState文件，然后采用`saver.restore`对已存在参数进行恢复。
 在该Demo中，每隔10000步，就对参数进行保存：
 ```python
 # save progress every 10000 iterations
@@ -313,7 +313,7 @@ if t % FRAME_PER_ACTION == 0:
 else:
     a_t[0] = 1  # do nothing
 ```
-这里，readout_t是训练数据为之前提到的四通道图像的模型输出。a_t是根据ε 概率选择的Action。
+这里，`readout_t`是训练数据为之前提到的四通道图像的模型输出。`a_t`是根据ε 概率选择的Action。
 
 其次，执行选择的动作，并保存返回的状态、得分。
 ```python
@@ -328,7 +328,7 @@ s_t1 = np.append(x_t1, s_t[:, :, :3], axis=2)
 # store the transition in D
 D.append((s_t, a_t, r_t, s_t1, terminal))
 ```
-经验池D保存的是一个马尔科夫序列。(s_t, a_t, r_t, s_t1, terminal)分别表示t时的状态s_t，执行的动作a_t，得到的反馈r_t，以及得到的下一步的状态s_t1和游戏是否结束的标志terminal。
+经验池`D`保存的是一个马尔科夫序列。`(s_t, a_t, r_t, s_t1, terminal)`分别表示`t`时的状态`s_t`，执行的动作`a_t`，得到的反馈`r_t`，以及得到的下一步的状态`s_t1`和游戏是否结束的标志`terminal`。
 
 在下一训练过程中，更新当前状态及步数：
 ```python
@@ -340,7 +340,7 @@ t += 1
 
 v. 通过梯度下降进行模型训练
 
-在实验一段时间后，经验池D中已经保存了一些样本数据后，就可以从这些样本数据中随机抽样，进行模型训练了。这里设置样本数为OBSERVE = 100000.。随机抽样的样本数为BATCH = 32。
+在实验一段时间后，经验池`D`中已经保存了一些样本数据后，就可以从这些样本数据中随机抽样，进行模型训练了。这里设置样本数为`OBSERVE = 100000`.。随机抽样的样本数为`BATCH = 32`。
 ```python
 if t > OBSERVE:
     # sample a minibatch to train on
@@ -369,5 +369,5 @@ if t > OBSERVE:
         s: s_j_batch}
     )
 ```
-s_j_batch、a_batch、r_batch、s_j1_batch是从经验池D中提取到的马尔科夫序列（Java童鞋羡慕Python的列表推导式啊），y_batch为标签值，若游戏结束，则不存在下一步中状态对应的Q值（回忆Q值更新过程），直接添加r_batch，若未结束，则用折合因子（0.99）和下一步中状态的最大Q值的乘积，添加至y_batch。
-最后，执行梯度下降训练，train_step的入参是s_j_batch、a_batch和y_batch。差不多经过2000000步（在本机上大概10个小时）训练之后，就能达到本文开头动图中的效果啦。
+`s_j_batch`、`a_batch`、`r_batch`、`s_j1_batch`是从经验池`D`中提取到的马尔科夫序列（Java童鞋羡慕Python的列表推导式啊），`y_batch`为标签值，若游戏结束，则不存在下一步中状态对应的`Q`值（回忆Q值更新过程），直接添加`r_batch`，若未结束，则用折合因子（0.99）和下一步中状态的最大Q值的乘积，添加至`y_batch`。
+最后，执行梯度下降训练，`train_step`的入参是`s_j_batch`、`a_batch`和`y_batch`。差不多经过2000000步（在本机上大概10个小时）训练之后，就能达到本文开头动图中的效果啦。
