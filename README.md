@@ -16,15 +16,15 @@
 神经网络算法是由众多的神经元可调的连接权值连接而成，具有大规模并行处理、分布式信息存储、良好的自组织自学习能力等特点。人工神经元与生物神经元结构类似，其结构对比如下图所示。<br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/bi-neuron.png)
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/neurons.jpg)<br>
-人工神经元的输入（x1,x2...xm）类似于生物神经元的树突，输入经过不同的权值（wk1, wk2, ....wkn），加上偏置，经过激活函数得到输出，最后将输出传输到下一层神经元进行处理。
-
-
+人工神经元的输入（x1,x2...xm）类似于生物神经元的树突，输入经过不同的权值（wk1, wk2, ....wkn），加上偏置，经过激活函数得到输出，最后将输出传输到下一层神经元进行处理。<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/f1.png)
+<br>
 
 激活函数为整个网络引入了非线性特性，这也是神经网络相比于回归等算法拟合能力更强的原因。常用的激活函数包括sigmoid、tanh等，它们的函数表达式如下：
-
-
-
-
+<br>
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/f2.png)
+![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/f3.png)
+<br>
 这里可以看出，sigmoid函数的值域是（0,1），tanh函数的值域是（-1,1）。
 
 ** 卷积神经网络**起源于动物的视觉系统，主要包含的技术是：
