@@ -117,3 +117,65 @@ return image_data, reward, terminal
 
 分别表示界面图像数据，得分以及是否结束游戏。对应前面强化学习模型，界面图像数据表示环境状态 s，得分表示环境给予学习系统的反馈 r。
 
+2. CNN模型构建
+
+该Demo中包含三个卷积层，一个池化层，两个全连接层，最后输出包含每一个动作Q值的向量。因此，首先定义权重、偏置、卷积和池化函数：
+
+# 权重
+def weight_variable(shape):
+    initial = tf.truncated_normal(shape, stddev=0.01)
+    return tf.Variable(initial)
+
+# 偏置
+def bias_variable(shape):
+    initial = tf.constant(0.01, shape=shape)
+    return tf.Variable(initial)
+
+# 卷积
+def conv2d(x, W, stride):
+    return tf.nn.conv2d(x, W, strides=[1, stride, stride, 1], padding="SAME")
+
+# 池化
+def max_pool_2x2(x):
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
+然后，通过上述函数构建卷积神经网络模型（对代码中参数不解的，可直接往前翻，看上面那张手画的图）。
+
+def createNetwork():
+    # 第一层卷积
+    W_conv1 = weight_variable([8, 8, 4, 32])
+    b_conv1 = bias_variable([32])
+    # 第二层卷积
+    W_conv2 = weight_variable([4, 4, 32, 64])
+    b_conv2 = bias_variable([64])
+    # 第三层卷积
+    W_conv3 = weight_variable([3, 3, 64, 64])
+    b_conv3 = bias_variable([64])
+    # 第一层全连接
+    W_fc1 = weight_variable([1600, 512])
+    b_fc1 = bias_variable([512])
+    # 第二层全连接
+    W_fc2 = weight_variable([512, ACTIONS])
+    b_fc2 = bias_variable([ACTIONS])
+
+    # 输入层
+    s = tf.placeholder("float", [None, 80, 80, 4])
+
+    # 第一层隐藏层+池化层
+    h_conv1 = tf.nn.relu(conv2d(s, W_conv1, 4) + b_conv1)
+    h_pool1 = max_pool_2x2(h_conv1)
+    # 第二层隐藏层（这里只用了一层池化层）
+    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2, 2) + b_conv2)
+    # h_pool2 = max_pool_2x2(h_conv2)
+    # 第三层隐藏层
+    h_conv3 = tf.nn.relu(conv2d(h_conv2, W_conv3, 1) + b_conv3)
+    # h_pool3 = max_pool_2x2(h_conv3)
+    # Reshape
+    # h_pool3_flat = tf.reshape(h_pool3, [-1, 256])
+    h_conv3_flat = tf.reshape(h_conv3, [-1, 1600])
+    # 全连接层
+    h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
+    # 输出层
+    # readout layer
+    readout = tf.matmul(h_fc1, W_fc2) + b_fc2
+
+    return s, readout, h_fc1
