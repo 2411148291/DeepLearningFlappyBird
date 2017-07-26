@@ -102,20 +102,25 @@ g. 再次全连接512×2，得到最终的2维向量[0,1]和[1,0]，分别代表
 2014年Google 4亿美金收购DeepMind的桥段，大家可能听说过。那么，DeepMind是如何被Google给盯上的呢？最终原因可以归咎为这篇论文：
 <br>
 >Playing Atari with Deep Reinforcement Learning
+
 <br>DeepMind团队通过强化学习，完成了20多种游戏，实现了端到端的学习。其用到的算法就是Q Network。2015年，DeepMind团队在《Nature》上发表了一篇升级版：
 <br>
 >Human-level control through deep reinforcement learning
-
-<br>自此，在这类游戏领域，人已经无法超过机器了。后来又有了AlphaGo，以及Master，当然，这都是后话了。其实本文也属于上述论文的范畴，只不过基于TensorFlow平台进行了实现，加入了一些笔者自己的理解而已。
+<br>
+自此，在这类游戏领域，人已经无法超过机器了。后来又有了AlphaGo，以及Master，当然，这都是后话了。其实本文也属于上述论文的范畴，只不过基于TensorFlow平台进行了实现，加入了一些笔者自己的理解而已。
 回到正题，Q Network属于强化学习，那么先介绍下强化学习。
+
 <br>
 ![](https://github.com/2411148291/DeepLearningFlappyBird/blob/master/images/dqn_netc.png)
 <br>
+
 这张图是从UCL的课程中拷出来的，课程链接地址（YouTube）：https://www.youtube.com/watch?v=2pWv7GOvuf0
+
 强化学习过程有两个组成部分：
 *智能代理（学习系统）
 *环境
-<br>如图所示，在每步迭代过程中，首先智能代理（学习系统）接收环境的状态st，然后产生动作at作用于环境，环境接收动作at，并且对其进行评价，反馈给智能代理rt。不断的循环这个过程，就会产生一个状态/动作/反馈的序列：（s1, a1, r1, s2, a2, r2.....,sn, an, rn），而这个序列让我们很自然的想起了:
+<br>
+如图所示，在每步迭代过程中，首先智能代理（学习系统）接收环境的状态st，然后产生动作at作用于环境，环境接收动作at，并且对其进行评价，反馈给智能代理rt。不断的循环这个过程，就会产生一个状态/动作/反馈的序列：（s1, a1, r1, s2, a2, r2.....,sn, an, rn），而这个序列让我们很自然的想起了:
 
 马尔科夫决策过程
 
