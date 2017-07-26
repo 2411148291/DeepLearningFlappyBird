@@ -139,7 +139,7 @@ def conv2d(x, W, stride):
 def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
 然后，通过上述函数构建卷积神经网络模型（对代码中参数不解的，可直接往前翻，看上面那张手画的图）。
-
+` ``Python
 def createNetwork():
     # 第一层卷积
     W_conv1 = weight_variable([8, 8, 4, 32])
@@ -176,5 +176,5 @@ def createNetwork():
     # readout layer
     readout = tf.matmul(h_fc1, W_fc2) + b_fc2
 
-    return s, readout, h_fc1
-</div>
+    return s, readout, h_fc1
+//Python
